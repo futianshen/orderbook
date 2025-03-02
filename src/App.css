@@ -40,3 +40,22 @@
 .read-the-docs {
   color: #888;
 }
+
+
+@keyframes flash-green {
+    0% { background-color: rgba(0, 177, 93, 0.5); }
+    100% { background-color: transparent; }
+}
+
+@keyframes flash-red {
+    0% { background-color: rgba(255, 91, 90, 0.5); }
+    100% { background-color: transparent; }
+}
+
+.animate-flash-green {
+    animation: flash-green 0.5s ease-out;
+}
+
+.animate-flash-red {
+    animation: flash-red 0.5s ease-out;
+}
