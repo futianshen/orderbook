@@ -16,7 +16,7 @@ This project uses **Bun** as the package manager.
 
 ### Clone the Repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/futianshen/orderbook.git
 cd orderbook
 ```
 
