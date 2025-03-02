@@ -1,5 +1,7 @@
 # Orderbook
 
+![Demo GIF](public/demo.gif)
+
 ## Overview
 **Orderbook** is a real-time order book display application that utilizes the BTSE Futures WebSocket API to provide live data updates. Built with React as the primary front-end framework, this project aims to deliver a clear, dynamic, and visually engaging order book interface, complete with animations to highlight changes in buy and sell data.
 
