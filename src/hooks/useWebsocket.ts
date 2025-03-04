@@ -37,7 +37,9 @@ const useWebSocket = <T>(url: string, topic: string, onMessage: (data: T) => voi
     useEffect(() => {
         connect();
         return () => {
-            wsRef.current?.close();
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+                wsRef.current.close();
+            }
         };
     }, [connect]);
 
