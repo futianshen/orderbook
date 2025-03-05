@@ -32,6 +32,18 @@ bun install
 bun run dev
 ```
 
+### Run Tests
+
+```bash
+bun test
+```
+
+or
+
+```bash
+bun run test
+```
+
 ### Build for Production:
 
 ```bash
