@@ -1,12 +1,7 @@
 import { useCallback, useState } from "react";
-import useWebSocket from "../../../../hooks/useWebsocket";
-
-type Order = {
-    price: string;
-    size: number;
-    cumulative: number;
-    cumulativePercentage: number;
-}
+import useWebSocket from "../../../../../hooks/useWebsocket";
+import { calculateCumulative } from "./utils";
+import type { Order } from "../../../../../types";
 
 type OrderBook = {
     bids: Order[];
@@ -32,39 +27,12 @@ type WebSocketMessage = {
     data: SnapshotData | DeltaData;
 }
 
-const MAX_QUOTES = 8;
-
 const useOrderBook = (symbol: string) => {
     const [orderBook, setOrderBook] = useState<OrderBook>({ bids: [], asks: [] });
     const [seqNum, setSeqNum] = useState<number | null>(null);
 
     useWebSocket<WebSocketMessage>(`wss://ws.btse.com/ws/oss/futures`, `update:${symbol}_0`, useCallback(({ data }) => {
         if (!data) return;
-
-        const calculateCumulative = (orders: Array<[string, number]>, isBids: boolean): Order[] => {
-            if (isBids) {
-                orders.sort((a, b) => Number(b[0]) - Number(a[0])); // 買單：高到低排序
-                orders = orders.slice(0, MAX_QUOTES);
-                const totalSize = orders.reduce((sum, order) => sum + order[1], 0);
-                let cumulative = 0;
-                return orders.map(([price, size]) => {
-                    cumulative += size;
-                    const cumulativePercentage = totalSize > 0 ? (cumulative / totalSize) * 100 : 0;
-                    return { price, size, cumulative, cumulativePercentage };
-                });
-            } else {
-                orders.sort((a, b) => Number(a[0]) - Number(b[0])); // 賣單：低到高排序
-                orders = orders.slice(0, MAX_QUOTES);
-                const totalSize = orders.reduce((sum, order) => sum + order[1], 0);
-                let cumulative = 0;
-                const cumulativeArray = orders.map(([price, size]) => {
-                    cumulative += size;
-                    const cumulativePercentage = totalSize > 0 ? (cumulative / totalSize) * 100 : 0;
-                    return { price, size, cumulative, cumulativePercentage };
-                });
-                return cumulativeArray.reverse(); // 反轉後，陣列最前面累計量最大
-            }
-        };
 
         if (data.type === 'snapshot') {
             // 處理快照：先轉換 size 為 number，再計算累計數據
@@ -82,7 +50,7 @@ const useOrderBook = (symbol: string) => {
 
         if (data.type === 'delta') {
             // 若序號不連續，則不處理 delta 更新
-            if (seqNum !== null && data.prevSeqNum !== seqNum) {
+            if (typeof seqNum === 'number' && data.prevSeqNum !== seqNum) {
                 console.warn("Out of order update received. Resubscribing...");
                 return;
             }

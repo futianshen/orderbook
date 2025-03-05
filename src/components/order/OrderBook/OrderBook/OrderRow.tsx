@@ -50,7 +50,7 @@ const OrderRow: FC<Props> = ({ price, size, cumulative, progressPercent, baseTex
                     backgroundColor
                 }}
             />
-            <span className="relative">{Number(price).toLocaleString()}</span>
+            <span className="relative">{Number(cumulative).toLocaleString()}</span>
         </td>
     </tr>
 };
