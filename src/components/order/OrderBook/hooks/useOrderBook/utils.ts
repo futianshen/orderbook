@@ -8,20 +8,19 @@ type CalculateCumulative = (
 ) => Order[];
 
 export const calculateCumulative: CalculateCumulative = (orders, isBids) => {
-    const sorted = orders.sort((a, b) =>
-        isBids ? Number(b[0]) - Number(a[0]) : Number(a[0]) - Number(b[0])
-    );
-    const sliced = sorted.slice(0, MAX_QUOTES);
-    const totalSize = sliced.reduce((sum, [, size]) => sum + size, 0);
+    // Sort and limit orders
+    const sortedOrders = orders
+        .sort((a, b) => isBids ? Number(b[0]) - Number(a[0]) : Number(a[0]) - Number(b[0]))
+        .slice(0, MAX_QUOTES);
+    // Calculate running totals
+    const total = sortedOrders.reduce((sum, [, size]) => sum + size, 0);
     let cumulative = 0;
-    const result = sliced.map(([price, size]) => {
-        cumulative += size;
-        return {
-            price,
-            size,
-            cumulative,
-            cumulativePercentage: totalSize ? (cumulative / totalSize) * 100 : 0,
-        };
-    });
+    // Map to final format
+    const result = sortedOrders.map(([price, size]) => ({
+        price,
+        size,
+        cumulative: (cumulative += size),
+        cumulativePercentage: total ? (cumulative / total) * 100 : 0
+    }));
     return isBids ? result : result.reverse();
 };
